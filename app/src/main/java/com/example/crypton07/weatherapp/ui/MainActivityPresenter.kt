@@ -1,7 +1,11 @@
 package com.example.crypton07.weatherapp.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.widget.Toast
+import android.util.Log
+import com.example.crypton07.weatherapp.api.RestApi
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class MainActivityPresenter : MainActivityContract.Presenter {
 
@@ -13,7 +17,17 @@ class MainActivityPresenter : MainActivityContract.Presenter {
         this.context = context
     }
 
+    @SuppressLint("CheckResult")
     override fun getWeatherData(name: String) {
-        Toast.makeText(context, name, Toast.LENGTH_SHORT).show()
+        RestApi.serverApi().getData(q = name)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { result ->
+                            Log.v("ARTICLE ID ", "" + result)
+                        },
+                        { error ->
+                            Log.e("ERROR", error.message)
+                        })
     }
 }
